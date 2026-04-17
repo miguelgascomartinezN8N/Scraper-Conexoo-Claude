@@ -1,7 +1,9 @@
-from pydantic_settings import BaseSettings
+from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
 class Settings(BaseSettings):
+    model_config = SettingsConfigDict(env_file=".env")
+
     use_playwright: bool = True
     playwright_timeout: int = 15
     http_timeout: int = 10
@@ -11,9 +13,6 @@ class Settings(BaseSettings):
     max_domains_per_request: int = 100
     api_host: str = "0.0.0.0"
     api_port: int = 8000
-
-    class Config:
-        env_file = ".env"
 
 
 settings = Settings()
