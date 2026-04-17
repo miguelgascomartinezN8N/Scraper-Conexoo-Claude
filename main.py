@@ -89,6 +89,8 @@ def scrape(request: ScrapeRequest):
 def menu_extract(request: MenuRequest):
     if not request.domains:
         raise HTTPException(status_code=400, detail="Lista de dominios vacía")
+    if len(request.domains) > settings.max_domains_per_request:
+        raise HTTPException(status_code=400, detail=f"Máximo {settings.max_domains_per_request} dominios por petición")
 
     results = []
     for domain in request.domains:
@@ -105,6 +107,8 @@ def menu_extract(request: MenuRequest):
 def scrape_rich(request: RichRequest):
     if not request.domains:
         raise HTTPException(status_code=400, detail="Lista de dominios vacía")
+    if len(request.domains) > settings.max_domains_per_request:
+        raise HTTPException(status_code=400, detail=f"Máximo {settings.max_domains_per_request} dominios por petición")
 
     results = []
     for domain in request.domains:
@@ -115,6 +119,7 @@ def scrape_rich(request: RichRequest):
             titulo_web=sr.titulo_web,
             meta_descripcion=sr.meta_descripcion,
             descripcion_negocio=sr.descripcion_negocio,
+            texto_about=sr.texto_about,
             email_principal=sr.email_principal,
             emails_adicionales=sr.emails_adicionales,
             telefono_principal=sr.telefono_principal,

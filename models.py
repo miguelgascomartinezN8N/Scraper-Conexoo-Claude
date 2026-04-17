@@ -60,6 +60,7 @@ class RichResult(BaseModel):
     titulo_web: Optional[str] = None
     meta_descripcion: Optional[str] = None
     descripcion_negocio: Optional[str] = None
+    texto_about: Optional[str] = None
     email_principal: Optional[str] = None
     emails_adicionales: list[str] = []
     telefono_principal: Optional[str] = None
