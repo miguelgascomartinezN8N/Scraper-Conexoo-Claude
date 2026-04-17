@@ -86,3 +86,19 @@ def test_find_about_url_returns_none_when_not_found():
     html = "<html><body><p>Sin links de about</p></body></html>"
     url = find_about_url(html, "https://empresa.com")
     assert url is None
+
+
+def test_descripcion_negocio_max_600_chars():
+    long_meta = "M" * 400
+    long_body = "B" * 400
+    html = f"""
+    <html>
+      <head>
+        <title>{"T" * 100}</title>
+        <meta name="description" content="{long_meta}">
+      </head>
+      <body><p>{long_body}</p></body>
+    </html>
+    """
+    result = extract_rich(html, "https://empresa.com")
+    assert len(result["descripcion_negocio"] or "") <= 600

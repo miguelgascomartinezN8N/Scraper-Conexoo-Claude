@@ -57,7 +57,7 @@ def extract_rich(html: str, base_url: str) -> dict:
         if og and og.get('content'):
             meta_descripcion = og['content'].strip()
 
-    visible_text = _get_visible_text(BeautifulSoup(html, 'lxml'))
+    visible_text = _get_visible_text(BeautifulSoup(html, 'lxml'))  # separate parse: _get_visible_text mutates soup via decompose
     texto_homepage = visible_text[:settings.rich_text_max_chars] if visible_text else None
 
     formulario_contacto_url = None
