@@ -101,3 +101,57 @@ def test_phone_multiple_adicionales():
     principal, adicionales = extract_phones(html)
     assert principal is not None
     assert len(adicionales) <= 3
+
+
+def test_email_data_mail_attribute():
+    html = '<span data-mail="via-datamail@empresa.com">email</span>'
+    principal, adicionales = extract_emails(html)
+    assert principal == "via-datamail@empresa.com"
+
+
+def test_email_excludes_no_reply_with_dash():
+    html = "<p>no-reply@empresa.com</p>"
+    principal, adicionales = extract_emails(html)
+    assert principal is None
+
+
+def test_email_priority_contacto_over_generic():
+    html = "<p>otro@empresa.com y contacto@empresa.com</p>"
+    principal, adicionales = extract_emails(html)
+    assert principal == "contacto@empresa.com"
+
+
+def test_email_priority_hola_over_generic():
+    html = "<p>otro@empresa.com y hola@empresa.com</p>"
+    principal, adicionales = extract_emails(html)
+    assert principal == "hola@empresa.com"
+
+
+def test_phone_movil_context():
+    html = "<p>Móvil: 612 345 678</p>"
+    principal, adicionales = extract_phones(html)
+    assert principal is not None
+
+
+def test_phone_llamar_context():
+    html = "<p>Llámanos: 912 345 678</p>"
+    principal, adicionales = extract_phones(html)
+    assert principal is not None
+
+
+def test_phone_celular_context():
+    html = "<p>Celular: 612 345 678</p>"
+    principal, adicionales = extract_phones(html)
+    assert principal is not None
+
+
+def test_phone_adicionales_capped_at_3():
+    html = """
+    <p>Tel: <a href="tel:+34911111111">111</a></p>
+    <p>Móvil: <a href="tel:+34622222222">222</a></p>
+    <p>Fax: <a href="tel:+34933333333">333</a></p>
+    <p>Otro: <a href="tel:+34944444444">444</a></p>
+    """
+    principal, adicionales = extract_phones(html)
+    assert principal is not None
+    assert len(adicionales) <= 3

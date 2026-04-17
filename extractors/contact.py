@@ -42,7 +42,7 @@ def _is_valid_email(email: str) -> bool:
     return True
 
 
-def _prioritize(emails: set) -> tuple[Optional[str], list[str]]:
+def _prioritize(emails: set[str]) -> tuple[Optional[str], list[str]]:
     valid = sorted([e for e in emails if _is_valid_email(e)])
     if not valid:
         return None, []
