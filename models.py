@@ -88,6 +88,17 @@ class RichResponse(BaseModel):
     results: list[RichResult]
 
 
+# A4 — endpoint único
+class PublisherRequest(BaseModel):
+    domains: list[str]
+    timeout: int = 15
+    crawl: bool = True
+
+
+class PublisherResponse(BaseModel):
+    results: list[RichResult]
+
+
 class HealthResponse(BaseModel):
     status: str
     version: str

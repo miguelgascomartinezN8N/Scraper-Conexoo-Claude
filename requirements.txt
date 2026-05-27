@@ -13,6 +13,8 @@ langdetect==1.0.9
 phonenumbers==8.13.40
 # A3 — extras
 feedparser==6.0.11
+# A4 — extras
+cachetools==5.3.3
 # dev
 pre-commit==3.7.1
 ruff==0.4.4

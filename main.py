@@ -11,9 +11,10 @@ from models import (
     ScrapeRequest, ScrapeResponse, ScrapeResult as ScrapeResultModel, ContactItem,
     MenuRequest, MenuResponse, MenuResult, MenuLink,
     RichRequest, RichResponse, RichResult,
+    PublisherRequest, PublisherResponse,
     HealthResponse,
 )
-from scraper import scrape_domain
+from scraper import scrape_domain, scrape_publisher
 
 logging.basicConfig(
     level=logging.INFO,
@@ -139,3 +140,44 @@ def scrape_rich(request: RichRequest):
         ))
 
     return RichResponse(results=results)
+
+
+@app.post("/scrape-publisher", response_model=PublisherResponse)
+def scrape_publisher_endpoint(request: PublisherRequest):
+    if not request.domains:
+        raise HTTPException(status_code=400, detail="Lista de dominios vacía")
+    if len(request.domains) > settings.max_domains_per_request:
+        raise HTTPException(status_code=400, detail=f"Máximo {settings.max_domains_per_request} dominios por petición")
+
+    results = []
+    for domain in request.domains:
+        data = scrape_publisher(domain, timeout=request.timeout, crawl=request.crawl)
+        results.append(RichResult(
+            domain=data["domain"],
+            status=data["status"],
+            titulo_web=data.get("titulo_web"),
+            meta_descripcion=data.get("meta_descripcion"),
+            descripcion_negocio=data.get("descripcion_negocio"),
+            texto_about=data.get("texto_about"),
+            email_principal=data.get("email_principal"),
+            emails_adicionales=data.get("emails_adicionales", []),
+            telefono_principal=data.get("telefono_principal"),
+            telefonos_adicionales=data.get("telefonos_adicionales", []),
+            formulario_contacto_url=data.get("formulario_contacto_url"),
+            menu_links=[MenuLink(**lnk) for lnk in data.get("menu_links", [])],
+            used_playwright=data.get("used_playwright", False),
+            processing_time=data.get("processing_time", 0.0),
+            idioma=data.get("idioma"),
+            nombre_owner=data.get("nombre_owner"),
+            tipo_schema=data.get("tipo_schema"),
+            redes_sociales=data.get("redes_sociales", {}),
+            pais=data.get("pais"),
+            pagina_publicidad_url=data.get("pagina_publicidad_url"),
+            lead_caliente=data.get("lead_caliente", False),
+            ads_partners=data.get("ads_partners", []),
+            rss_url=data.get("rss_url"),
+            ultimo_post_fecha=data.get("ultimo_post_fecha"),
+            paginas_visitadas=data.get("paginas_visitadas", []),
+        ))
+
+    return PublisherResponse(results=results)

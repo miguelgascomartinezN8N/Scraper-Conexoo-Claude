@@ -7,11 +7,14 @@ from dataclasses import dataclass, field
 import requests
 from bs4 import BeautifulSoup
 
+from cache import cache_get, cache_set
 from config import settings
 from browser import browser_manager
+from extractors.adstxt import fetch_adstxt
 from extractors.contact import extract_emails, extract_phones
 from extractors.menu import extract_menu
 from extractors.rich import extract_rich, find_about_url
+import extractors.rss as _rss_module
 
 logger = logging.getLogger(__name__)
 
@@ -191,3 +194,89 @@ def scrape_domain(domain: str, timeout: int = 10) -> ScrapeResult:
         lead_caliente=data.get("lead_caliente", False),
         paginas_visitadas=data.get("paginas_visitadas", []),
     )
+
+
+def scrape_publisher(domain: str, timeout: int = 15, crawl: bool = True) -> dict:
+    cached = cache_get(domain)
+    if cached is not None:
+        return cached
+
+    start = time.time()
+
+    if not domain.startswith(("http://", "https://")):
+        url = f"https://{domain}"
+    else:
+        url = domain
+
+    clean_domain = urlparse(url).netloc or domain
+    used_playwright = False
+    data: dict = {}
+
+    session = requests.Session()
+    session.headers.update(HEADERS)
+
+    html = _fetch_http(url, timeout)
+    if html:
+        data = _extract_all(html, url, timeout, session=session, crawl=crawl)
+
+    if settings.use_playwright and browser_manager.available and (
+        not html
+        or _is_poor_result(
+            data.get("email_principal"),
+            data.get("telefono_principal"),
+            data.get("menu_links", []),
+        )
+    ):
+        pw_html = browser_manager.get_html(url, settings.playwright_timeout)
+        if pw_html:
+            data = _extract_all(pw_html, url, timeout, session=session, crawl=crawl)
+            used_playwright = True
+
+    if not html and not used_playwright:
+        status = "error"
+    elif data.get("email_principal") or data.get("telefono_principal"):
+        status = "success"
+    else:
+        status = "no_contacts"
+
+    ads_partners = fetch_adstxt(clean_domain)
+
+    rss_url = None
+    ultimo_post_fecha = None
+    if html:
+        soup_rss = BeautifulSoup(html, 'lxml')
+        rss_data = _rss_module.find_rss_feed(soup_rss, url, session)
+        if rss_data:
+            rss_url = rss_data.get('rss_url')
+            ultimo_post_fecha = rss_data.get('ultimo_post_fecha')
+
+    result = {
+        "domain": clean_domain,
+        "status": status,
+        "email_principal": data.get("email_principal"),
+        "emails_adicionales": data.get("emails_adicionales", []),
+        "telefono_principal": data.get("telefono_principal"),
+        "telefonos_adicionales": data.get("telefonos_adicionales", []),
+        "menu_links": data.get("menu_links", []),
+        "titulo_web": data.get("titulo_web"),
+        "meta_descripcion": data.get("meta_descripcion"),
+        "descripcion_negocio": data.get("descripcion_negocio"),
+        "texto_about": data.get("texto_about"),
+        "formulario_contacto_url": data.get("formulario_contacto_url"),
+        "used_playwright": used_playwright,
+        "processing_time": round(time.time() - start, 2),
+        "idioma": data.get("idioma"),
+        "nombre_owner": data.get("nombre_owner"),
+        "tipo_schema": data.get("tipo_schema"),
+        "redes_sociales": data.get("redes_sociales", {}),
+        "pais": data.get("pais"),
+        "pagina_publicidad_url": data.get("pagina_publicidad_url"),
+        "lead_caliente": data.get("lead_caliente", False),
+        "paginas_visitadas": data.get("paginas_visitadas", []),
+        "ads_partners": ads_partners,
+        "rss_url": rss_url,
+        "ultimo_post_fecha": ultimo_post_fecha,
+    }
+
+    cache_set(domain, result)
+    return result
