@@ -1,0 +1,61 @@
+{
+  "results": [
+    {
+      "domain": "ferlam-technologies.fr",
+      "status": "no_contacts",
+      "titulo_web": "Ferlam Technologies, expert en textiles techniques haute température",
+      "meta_descripcion": "L'expertise de Ferlam Technologies, une entreprise française depuis 40 ans spécialisée dans les textiles techniques hautes températures en France et dans 35 pays.",
+      "descripcion_negocio": "Ferlam Technologies, expert en textiles techniques haute température L'expertise de Ferlam Technologies, une entreprise française depuis 40 ans spécialisée dans les textiles techniques hautes températures en France et dans 35 pays. Ferlam Technologies, expert en textiles techniques haute température Ferlam Technologies, fabricant de textiles techniques haute température Isoler L'engagement au plus haut degré Convoyer L'engagement au plus haut degré Protéger Ferlam, des produits répondant aux performances thermiques les plus exigeantes Filtres Bande Feutre Fil Gaine Glasstools Joint Tissu Gener",
+      "texto_about": null,
+      "email_principal": null,
+      "emails_adicionales": [],
+      "telefono_principal": null,
+      "telefonos_adicionales": [],
+      "formulario_contacto_url": null,
+      "menu_links": [
+        {
+          "text": "Nos valeurs",
+          "url": "https://ferlam-technologies.fr/a-propos/#nos-valeurs"
+        },
+        {
+          "text": "Notre mission",
+          "url": "https://ferlam-technologies.fr/a-propos/#notre-mission"
+        },
+        {
+          "text": "L’engagement",
+          "url": "https://ferlam-technologies.fr/a-propos/#engagement"
+        },
+        {
+          "text": "Transporter",
+          "url": "https://ferlam-technologies.fr/vos-besoins/#transporter"
+        },
+        {
+          "text": "Isoler",
+          "url": "https://ferlam-technologies.fr/vos-besoins/#isoler"
+        },
+        {
+          "text": "Protéger",
+          "url": "https://ferlam-technologies.fr/vos-besoins/#proteger"
+        },
+        {
+          "text": "Thermique",
+          "url": "https://ferlam-technologies.fr/les-applications/#thermique"
+        },
+        {
+          "text": "Process",
+          "url": "https://ferlam-technologies.fr/les-applications/#process"
+        },
+        {
+          "text": "Mobilité",
+          "url": "https://ferlam-technologies.fr/les-applications/#mobilite"
+        },
+        {
+          "text": "Verre",
+          "url": "https://ferlam-technologies.fr/les-applications/#verre"
+        }
+      ],
+      "used_playwright": false,
+      "processing_time": 1.53
+    }
+  ]
+}

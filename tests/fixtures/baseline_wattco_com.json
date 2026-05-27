@@ -1,0 +1,49 @@
+{
+  "results": [
+    {
+      "domain": "wattco.com",
+      "status": "success",
+      "titulo_web": "Industrial Heaters Manufacturer",
+      "meta_descripcion": "Wattco manufactures a complete line of flange heaters, circulation heaters, tubular heaters, and immersion heaters. Browse our product catalogue.",
+      "descripcion_negocio": "Industrial Heaters Manufacturer Wattco manufactures a complete line of flange heaters, circulation heaters, tubular heaters, and immersion heaters. Browse our product catalogue. Industrial Heaters Manufacturer - Wattco English Français Español Emergency Skid Heating Systems About Us Our Products Immersion Heaters Flanged Heaters Screw Plug Heaters Circulation Heaters Over the Side Heaters Inline Heaters Circulation Heaters Inline Heaters Flanged Heaters Screw Plug Heaters Pipe Heater Over the Side Heaters Industrial Boiler Heaters Tubular Heaters Finned Strip Heaters Cartridge Heaters Band Hea",
+      "texto_about": null,
+      "email_principal": null,
+      "emails_adicionales": [],
+      "telefono_principal": "15144889124",
+      "telefonos_adicionales": [],
+      "formulario_contacto_url": "https://www.wattco.com/contact-us/",
+      "menu_links": [
+        {
+          "text": "Our Products",
+          "url": "https://wattco.com/products"
+        },
+        {
+          "text": "Careers",
+          "url": "https://wattco.com/career/"
+        },
+        {
+          "text": "Case Study",
+          "url": "https://wattco.com/casestudy/"
+        },
+        {
+          "text": "Case Studies",
+          "url": "https://wattco.com/casestudy"
+        },
+        {
+          "text": "Careers",
+          "url": "https://wattco.com/career"
+        },
+        {
+          "text": "Blog",
+          "url": "https://wattco.com/blog"
+        },
+        {
+          "text": "Heaters Water",
+          "url": "https://wattco.com/"
+        }
+      ],
+      "used_playwright": false,
+      "processing_time": 11.26
+    }
+  ]
+}

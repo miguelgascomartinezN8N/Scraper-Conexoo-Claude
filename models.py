@@ -1,4 +1,4 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 from typing import Optional
 
 
@@ -69,6 +69,12 @@ class RichResult(BaseModel):
     menu_links: list[MenuLink] = []
     used_playwright: bool = False
     processing_time: float = 0.0
+    # A2 — nuevos campos
+    idioma: Optional[str] = None
+    nombre_owner: Optional[str] = None
+    tipo_schema: Optional[str] = None
+    redes_sociales: dict[str, str] = Field(default_factory=dict)
+    pais: Optional[str] = None
 
 
 class RichResponse(BaseModel):

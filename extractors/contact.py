@@ -2,6 +2,21 @@ import re
 from typing import Optional
 from bs4 import BeautifulSoup
 
+try:
+    import phonenumbers
+    from phonenumbers import PhoneNumberFormat
+    _PHONENUMBERS_AVAILABLE = True
+except ImportError:
+    _PHONENUMBERS_AVAILABLE = False
+
+# TLD → ISO 2 country code hint for phonenumbers.parse()
+TLD_COUNTRY: dict[str, str] = {
+    'es': 'ES', 'fr': 'FR', 'de': 'DE', 'it': 'IT', 'pt': 'PT',
+    'uk': 'GB', 'co': 'CO', 'mx': 'MX', 'ar': 'AR', 'br': 'BR',
+    'nl': 'NL', 'be': 'BE', 'ch': 'CH', 'at': 'AT', 'pl': 'PL',
+    'se': 'SE', 'no': 'NO', 'dk': 'DK', 'fi': 'FI',
+}
+
 EMAIL_RE = re.compile(r'[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[a-zA-Z]{2,}')
 OBFUSCATED_AT_DOT_RE = re.compile(
     r'([\w._%+-]+)\s*[\[\(]at[\]\)]\s*([\w.-]+)\s*[\[\(]dot[\]\)]\s*([\w]+)',
@@ -94,7 +109,22 @@ def _digits_only(phone: str) -> str:
     return re.sub(r'\D', '', phone)
 
 
-def extract_phones(html: str) -> tuple[Optional[str], list[str]]:
+def _normalize_e164(raw: str, domain_tld: Optional[str] = None) -> Optional[str]:
+    """Intenta normalizar un teléfono a E.164. Retorna None si no es parseable."""
+    if not _PHONENUMBERS_AVAILABLE:
+        return None
+    country_hint = TLD_COUNTRY.get((domain_tld or '').lower())
+    for hint in ([None, country_hint] if country_hint else [None]):
+        try:
+            parsed = phonenumbers.parse(raw, hint)
+            if phonenumbers.is_valid_number(parsed):
+                return phonenumbers.format_number(parsed, PhoneNumberFormat.E164)
+        except Exception:
+            continue
+    return None
+
+
+def extract_phones(html: str, domain_tld: Optional[str] = None) -> tuple[Optional[str], list[str]]:
     soup = BeautifulSoup(html, 'lxml')
     phones: list[str] = []
 
@@ -122,6 +152,19 @@ def extract_phones(html: str) -> tuple[Optional[str], list[str]]:
             if cleaned not in phones:
                 phones.append(cleaned)
 
-    principal = phones[0] if phones else None
-    adicionales = phones[1:4]
+    # Normalize to E.164 when possible; fallback to cleaned raw
+    def _best(raw: str) -> str:
+        return _normalize_e164(raw, domain_tld) or raw
+
+    normalized = [_best(p) for p in phones]
+    # Deduplicate preserving order
+    seen: set[str] = set()
+    deduped = []
+    for p in normalized:
+        if p not in seen:
+            seen.add(p)
+            deduped.append(p)
+
+    principal = deduped[0] if deduped else None
+    adicionales = deduped[1:4]
     return principal, adicionales

@@ -8,3 +8,10 @@ pydantic-settings==2.2.1
 pytest==8.2.0
 httpx==0.27.0
 pytest-mock==3.14.0
+# A2 — extras
+langdetect==1.0.9
+phonenumbers==8.13.40
+# dev
+pre-commit==3.7.1
+ruff==0.4.4
+isort==5.13.2

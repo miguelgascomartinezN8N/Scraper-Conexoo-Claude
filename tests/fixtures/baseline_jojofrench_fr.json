@@ -1,0 +1,73 @@
+{
+  "results": [
+    {
+      "domain": "jojofrench.fr",
+      "status": "success",
+      "titulo_web": "JojoFrench",
+      "meta_descripcion": null,
+      "descripcion_negocio": "JojoFrench JojoFrench - Skip to content À la une Comment ouvrir ma boîte mail rapidement et en toute sécurité May 25, 2026 Sosoactive : La plateforme incontournable des tendances et actualités digitales May 25, 2026 Salaire 1766 € Brut en Net : Calcul Simple et Rapide May 24, 2026 Qui est Diana Eckert ? Biographie complète et actualités May 24, 2026 Top 10 des meilleurs sites de casino en France en 2026 May 23, 2026 L’Ère Nouvelle du E-Commerce en France : 3 Plateformes Incontournables pour les Consommateurs Branchés May 23, 2026 Gaming Durostech : La Révolution du Jeu Vidéo Nouvelle Génératio",
+      "texto_about": null,
+      "email_principal": "miaadelheid@yahoo.com",
+      "emails_adicionales": [],
+      "telefono_principal": null,
+      "telefonos_adicionales": [],
+      "formulario_contacto_url": null,
+      "menu_links": [
+        {
+          "text": "À propos de nous",
+          "url": "https://jojofrench.fr/a-propos-de-nous/"
+        },
+        {
+          "text": "Politique de confidentialité",
+          "url": "https://jojofrench.fr/politique-de-confidentialite/"
+        },
+        {
+          "text": "Publicité avec nous",
+          "url": "https://jojofrench.fr/publicite-avec-nous/"
+        },
+        {
+          "text": "Mentions légales",
+          "url": "https://jojofrench.fr/mentions-legales/"
+        },
+        {
+          "text": "Catégories",
+          "url": "https://jojofrench.fr/categories/"
+        },
+        {
+          "text": "Santé",
+          "url": "https://jojofrench.fr/Catégorie/sante/"
+        },
+        {
+          "text": "Entreprises",
+          "url": "https://jojofrench.fr/Catégorie/entreprises/"
+        },
+        {
+          "text": "Éducation",
+          "url": "https://jojofrench.fr/Catégorie/education/"
+        },
+        {
+          "text": "Actualités",
+          "url": "https://jojofrench.fr/Catégorie/actualites/"
+        },
+        {
+          "text": "Mode",
+          "url": "https://jojofrench.fr/Catégorie/mode/"
+        },
+        {
+          "text": "Amélioration de l’habitat",
+          "url": "https://jojofrench.fr/Catégorie/amelioration-de-lhabitat/"
+        },
+        {
+          "text": "26",
+          "url": "https://jojofrench.fr/page/26/"
+        },
+        {
+          "text": "Next page",
+          "url": "https://jojofrench.fr/page/2/"
+        }
+      ],
+      "used_playwright": false,
+      "processing_time": 1.26
+    }
+  ]
+}
