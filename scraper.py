@@ -40,6 +40,16 @@ class ScrapeResult:
     formulario_contacto_url: Optional[str] = None
     used_playwright: bool = False
     processing_time: float = 0.0
+    # A2
+    idioma: Optional[str] = None
+    nombre_owner: Optional[str] = None
+    tipo_schema: Optional[str] = None
+    redes_sociales: dict = field(default_factory=dict)
+    pais: Optional[str] = None
+    # A3
+    pagina_publicidad_url: Optional[str] = None
+    lead_caliente: bool = False
+    paginas_visitadas: list = field(default_factory=list)
 
 
 def _is_poor_result(
@@ -75,11 +85,30 @@ def _fetch_about_text(about_url: str, timeout: int) -> Optional[str]:
     return None
 
 
-def _extract_all(html: str, base_url: str, timeout: int) -> dict:
+def _extract_all(
+    html: str,
+    base_url: str,
+    timeout: int,
+    session: Optional[requests.Session] = None,
+    crawl: bool = False,
+) -> dict:
     email_p, emails_add = extract_emails(html)
     phone_p, phones_add = extract_phones(html)
     menu = extract_menu(html, base_url)
-    rich = extract_rich(html, base_url)
+    rich = extract_rich(html, base_url, session=session, crawl=crawl)
+
+    # Re-run contact extraction on crawled subpages (A3)
+    crawled_pages = rich.pop('_pages', [])
+    if crawled_pages:
+        combined_html = '\n'.join(p.html for p in crawled_pages)
+        ep2, ea2 = extract_emails(combined_html)
+        pp2, pa2 = extract_phones(combined_html)
+        if ep2 and not email_p:
+            email_p = ep2
+        emails_add = list(dict.fromkeys(emails_add + ea2))
+        if pp2 and not phone_p:
+            phone_p = pp2
+        phones_add = list(dict.fromkeys(phones_add + pa2))
 
     about_url = find_about_url(html, base_url)
     texto_about = None
@@ -109,9 +138,12 @@ def scrape_domain(domain: str, timeout: int = 10) -> ScrapeResult:
     used_playwright = False
     data: dict = {}
 
+    session = requests.Session()
+    session.headers.update(HEADERS)
+
     html = _fetch_http(url, timeout)
     if html:
-        data = _extract_all(html, url, timeout)
+        data = _extract_all(html, url, timeout, session=session, crawl=True)
 
     if settings.use_playwright and browser_manager.available and (
         not html
@@ -123,7 +155,7 @@ def scrape_domain(domain: str, timeout: int = 10) -> ScrapeResult:
     ):
         pw_html = browser_manager.get_html(url, settings.playwright_timeout)
         if pw_html:
-            data = _extract_all(pw_html, url, timeout)
+            data = _extract_all(pw_html, url, timeout, session=session, crawl=True)
             used_playwright = True
 
     if not html and not used_playwright:
@@ -148,4 +180,14 @@ def scrape_domain(domain: str, timeout: int = 10) -> ScrapeResult:
         formulario_contacto_url=data.get("formulario_contacto_url"),
         used_playwright=used_playwright,
         processing_time=round(time.time() - start, 2),
+        # A2
+        idioma=data.get("idioma"),
+        nombre_owner=data.get("nombre_owner"),
+        tipo_schema=data.get("tipo_schema"),
+        redes_sociales=data.get("redes_sociales", {}),
+        pais=data.get("pais"),
+        # A3
+        pagina_publicidad_url=data.get("pagina_publicidad_url"),
+        lead_caliente=data.get("lead_caliente", False),
+        paginas_visitadas=data.get("paginas_visitadas", []),
     )

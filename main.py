@@ -128,6 +128,14 @@ def scrape_rich(request: RichRequest):
             menu_links=[MenuLink(**lnk) for lnk in sr.menu_links],
             used_playwright=sr.used_playwright,
             processing_time=sr.processing_time,
+            idioma=sr.idioma,
+            nombre_owner=sr.nombre_owner,
+            tipo_schema=sr.tipo_schema,
+            redes_sociales=sr.redes_sociales,
+            pais=sr.pais,
+            pagina_publicidad_url=sr.pagina_publicidad_url,
+            lead_caliente=sr.lead_caliente,
+            paginas_visitadas=sr.paginas_visitadas,
         ))
 
     return RichResponse(results=results)

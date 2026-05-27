@@ -75,6 +75,13 @@ class RichResult(BaseModel):
     tipo_schema: Optional[str] = None
     redes_sociales: dict[str, str] = Field(default_factory=dict)
     pais: Optional[str] = None
+    # A3 — señales editoriales
+    pagina_publicidad_url: Optional[str] = None
+    lead_caliente: bool = False
+    ads_partners: list[str] = Field(default_factory=list)
+    rss_url: Optional[str] = None
+    ultimo_post_fecha: Optional[str] = None
+    paginas_visitadas: list[str] = Field(default_factory=list)
 
 
 class RichResponse(BaseModel):

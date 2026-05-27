@@ -7,6 +7,8 @@ from bs4 import BeautifulSoup
 
 from config import settings
 from extractors.jsonld import extract_jsonld
+from extractors.multipage import crawl_pages, PageResult
+from extractors.owner import extract_owner
 from extractors.social import extract_social_links
 
 ABOUT_PATHS = re.compile(
@@ -60,6 +62,21 @@ def _detect_language(soup: BeautifulSoup, visible_text: str) -> Optional[str]:
     return None
 
 
+def _extract_menu_links(soup: BeautifulSoup, base_url: str) -> list[str]:
+    links = []
+    seen: set[str] = set()
+    for a in soup.find_all('a', href=True):
+        href = a['href'].strip()
+        absolute = urljoin(base_url, href)
+        parsed = urlparse(absolute)
+        if parsed.scheme in ('http', 'https') and parsed.netloc:
+            clean = absolute.split('?')[0].split('#')[0].rstrip('/')
+            if clean not in seen:
+                seen.add(clean)
+                links.append(absolute)
+    return links
+
+
 def find_about_url(html: str, base_url: str) -> Optional[str]:
     soup = BeautifulSoup(html, 'lxml')
     for a in soup.find_all('a', href=True):
@@ -71,7 +88,12 @@ def find_about_url(html: str, base_url: str) -> Optional[str]:
     return None
 
 
-def extract_rich(html: str, base_url: str) -> dict:
+def extract_rich(
+    html: str,
+    base_url: str,
+    session: Optional[requests.Session] = None,
+    crawl: bool = False,
+) -> dict:
     soup = BeautifulSoup(html, 'lxml')
 
     # ── Título ──────────────────────────────────────────────────────────────
@@ -143,8 +165,26 @@ def extract_rich(html: str, base_url: str) -> dict:
         if plat not in redes_sociales:
             redes_sociales[plat] = url
 
-    # ── Owner (A2.1 fallback) ────────────────────────────────────────────────
-    nombre_owner = jsonld_data['nombre_owner'] or autor_meta
+    # ── A3: Crawl subpages ───────────────────────────────────────────────────
+    paginas_visitadas: list[str] = []
+    pagina_publicidad_url: Optional[str] = None
+    lead_caliente = False
+    crawled_pages: list[PageResult] = []
+
+    if crawl and session is not None:
+        menu_links = _extract_menu_links(soup, base_url)
+        crawled_pages, pagina_publicidad_url = crawl_pages(base_url, menu_links, session, timeout=5)
+        for page in crawled_pages:
+            paginas_visitadas.append(page.url)
+            if page.is_lead_caliente:
+                lead_caliente = True
+
+    # ── A3: Owner heuristic (JSON-LD → footer © → about self-intro → meta author) ──
+    nombre_owner = extract_owner(
+        soup,
+        about_text='',
+        jsonld_nombre=jsonld_data['nombre_owner'] or autor_meta,
+    )
 
     return {
         "titulo_web": titulo_web,
@@ -160,4 +200,9 @@ def extract_rich(html: str, base_url: str) -> dict:
         "pais": pais,
         "nombre_sitio_og": nombre_sitio_og,
         "autor_meta": autor_meta,
+        # A3
+        "paginas_visitadas": paginas_visitadas,
+        "pagina_publicidad_url": pagina_publicidad_url,
+        "lead_caliente": lead_caliente,
+        "_pages": crawled_pages,
     }
